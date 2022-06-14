@@ -28,13 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.navigationViewMenuPane1 = new electrifier.Components.Controls.NavigationViewMenuPane();
+            this.SuspendLayout();
+            // 
+            // navigationViewMenuPane1
+            // 
+            this.navigationViewMenuPane1.CanOverflow = false;
+            this.navigationViewMenuPane1.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.navigationViewMenuPane1.Location = new System.Drawing.Point(0, 0);
+            this.navigationViewMenuPane1.Name = "navigationViewMenuPane1";
+            this.navigationViewMenuPane1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.navigationViewMenuPane1.Size = new System.Drawing.Size(175, 450);
+            this.navigationViewMenuPane1.TabIndex = 0;
+            this.navigationViewMenuPane1.Text = "navigationViewMenuPane1";
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.navigationViewMenuPane1);
+            this.Name = "MainForm";
             this.Text = "Form1";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion
+
+        private electrifier.Components.Controls.NavigationViewMenuPane navigationViewMenuPane1;
     }
 }
 

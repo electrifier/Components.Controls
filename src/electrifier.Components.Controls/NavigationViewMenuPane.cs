@@ -1,24 +1,122 @@
-﻿using System;
+﻿using electrifier.Components.Controls.Designers;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
+
+
 
 namespace electrifier.Components.Controls
 {
+    public enum PaneDisplayMode
+    {
+        Left,
+        Top,
+        LeftCompact,
+    }
+
+    /// <summary>
+    /// <see href="https://github.com/dotnet/winforms/blob/main/src/System.Windows.Forms/src/System/Windows/Forms/ToolStrip.cs"/>
+    /// </summary>
+    [Designer(typeof(NavigationViewMenuPaneDesigner))]
     public class NavigationViewMenuPane : ToolStrip
     {
+        private PaneDisplayMode paneDisplayMode = PaneDisplayMode.Left;
+
         private ToolStripButton tbtOpenNavigation;
         private ToolStripButton tbtSettings;
+
+        public bool IsInCompactMode { get { return (this.paneDisplayMode == PaneDisplayMode.LeftCompact); } }
+
+
+        //[Browsable(true)]
+        [DefaultValue(true)]
+        //[Category("Navigation Options")]
+        public bool IsSettingsVisible
+        {
+            get => this.tbtSettings.Visible;
+            set => this.tbtSettings.Visible = value;
+        }
+
+        [DefaultValue(PaneDisplayMode.Left)]
+        public PaneDisplayMode PaneDisplayMode
+        {
+            get => this.paneDisplayMode;
+            set => this.SetPaneDisplayMode(value);
+        }
 
         public NavigationViewMenuPane()
         {
             InitializeComponent();
+
+            //this.TopItems = new ToolStripItemCollection(this, new ToolStripItem[0]);
+
+            //this.testToolStripItems.Add(new ToolStripButton("test"));
         }
+
+        protected void SetPaneDisplayMode(PaneDisplayMode displayMode)
+        {
+            if (this.paneDisplayMode != displayMode)
+            {
+                this.paneDisplayMode = displayMode;
+
+                switch (displayMode)
+                {
+                    case PaneDisplayMode.Left:
+                    case PaneDisplayMode.LeftCompact:
+                        this.Dock = DockStyle.Left;
+                        break;
+                    case PaneDisplayMode.Top:
+                        this.Dock = DockStyle.Top;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(displayMode));
+                }
+
+                this.SetCompactMode(displayMode == PaneDisplayMode.LeftCompact);
+            }
+        }
+
+        protected void SetCompactMode(bool compactMode)
+        {
+            var displayStyle = compactMode ? ToolStripItemDisplayStyle.Image : ToolStripItemDisplayStyle.ImageAndText;
+
+            foreach (ToolStripItem item in this.Items)
+            {
+                item.DisplayStyle = displayStyle;
+            }
+        }
+
+        ////[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        //[Browsable(true)]
+        //[Category("Data")]
+        ////[EditorAttribute(typeof(CollectionEditor))]
+        //public ToolStripItemCollection TopItems;
+
+
+        /// <summary>
+        /// This works with simple designer
+        /// </summary>
+
+        //private List<ToolStripButton> testToolStripItems = new List<ToolStripButton>();
+        ////[EditorBrowsable(EditorBrowsableState.Never)]
+        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        //public List<ToolStripButton> TestToolStripItems
+        //{
+        //    get { return testToolStripItems; }
+        //    set { testToolStripItems = value; }
+        //}
+
+        /// end this works
+
 
         #region NavigationViewMenuPane.Designer.cs ============================================================================
 
@@ -55,6 +153,7 @@ namespace electrifier.Components.Controls
             // 
             // NavigationViewMenuPane
             // 
+            this.AutoSize = true;
             this.CanOverflow = false;
             this.Dock = System.Windows.Forms.DockStyle.Left;
             this.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -62,7 +161,7 @@ namespace electrifier.Components.Controls
             this.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtOpenNavigation,
             this.tbtSettings});
-            this.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
+            this.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.StackWithOverflow;
             this.Name = "NavigationMenu";
             this.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.Size = new System.Drawing.Size(250, 450);
@@ -75,7 +174,6 @@ namespace electrifier.Components.Controls
             this.tbtOpenNavigation.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtOpenNavigation.Name = "tbtOpenNavigation";
             this.tbtOpenNavigation.Size = new System.Drawing.Size(248, 28);
-            this.tbtOpenNavigation.Text = "toolStripButton1";
             // 
             // tbtSettings
             // 
