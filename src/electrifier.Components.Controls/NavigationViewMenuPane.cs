@@ -59,9 +59,21 @@ namespace electrifier.Components.Controls
         {
             InitializeComponent();
 
-            //this.TopItems = new ToolStripItemCollection(this, new ToolStripItem[0]);
+            this.menuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtOpenNavigation });
+            this.footerMenuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtSettings });
+
+
+            this.RebuildToolStripItems();
 
             //this.testToolStripItems.Add(new ToolStripButton("test"));
+        }
+
+        protected void RebuildToolStripItems()
+        {
+            this.Items.Clear();
+
+            this.Items.AddRange(this.MenuItems);
+            this.Items.AddRange(this.FooterMenuItems);
         }
 
         protected void SetPaneDisplayMode(PaneDisplayMode displayMode)
@@ -118,6 +130,28 @@ namespace electrifier.Components.Controls
         //}
 
         /// end this works
+        /// 
+
+        protected NavigationViewMenuPaneItemCollection menuItems;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public NavigationViewMenuPaneItemCollection MenuItems
+        {
+            get => this.menuItems;
+            set => this.menuItems = value;
+        }
+
+        protected NavigationViewMenuPaneItemCollection footerMenuItems;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public NavigationViewMenuPaneItemCollection FooterMenuItems
+        {
+            get => this.footerMenuItems;
+            set => this.footerMenuItems = value;
+        }
+
+
+
 
 
         #region NavigationViewMenuPane.Designer.cs ============================================================================
@@ -160,9 +194,9 @@ namespace electrifier.Components.Controls
             this.Dock = System.Windows.Forms.DockStyle.Left;
             this.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tbtOpenNavigation,
-            this.tbtSettings});
+            //this.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            //this.tbtOpenNavigation,
+            //this.tbtSettings});
             this.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.StackWithOverflow;
             this.Name = "NavigationMenu";
             this.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
