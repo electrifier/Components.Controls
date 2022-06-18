@@ -1,6 +1,4 @@
-﻿// dev-branch
-
-using electrifier.Components.Controls.Designers;
+﻿using electrifier.Components.Controls.Designers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,57 +16,92 @@ using System.Windows.Forms.Design;
 
 namespace electrifier.Components.Controls
 {
-    public enum PaneDisplayMode
-    {
-        Left,
-        Top,
-        LeftCompact,
-    }
-
     /// <summary>
-    /// <see href="https://github.com/dotnet/winforms/blob/main/src/System.Windows.Forms/src/System/Windows/Forms/ToolStrip.cs"/>
+    /// <see href="https://github.com/dotnet/winforms/blob/main/src/System.Windows.Forms/src/System/Windows/Forms/ToolStrip.cs"/><br/>
+    /// <see href="https://docs.microsoft.com/en-us/dotnet/desktop/winforms/controls/toolstrip-control-windows-forms?view=netframeworkdesktop-4.8"/>
     /// </summary>
     [Designer(typeof(NavigationViewMenuPaneDesigner))]
     public class NavigationViewMenuPane : ToolStrip
     {
-        private PaneDisplayMode paneDisplayMode = PaneDisplayMode.Left;
+        protected ToolStripButton tbtOpenNavigation;
+        protected ToolStripButton tbtSettings;
 
-        private ToolStripButton tbtOpenNavigation;
-        private ToolStripButton tbtSettings;
+        [Category("Navigation Options")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public NavigationViewMenuPaneItemCollection FooterMenuItems
+        {
+            get => this.footerMenuItems;
+            protected set { this.footerMenuItems = value; this.RebuildToolStripItems(); }
+        }
 
-        public bool IsInCompactMode { get { return (this.paneDisplayMode == PaneDisplayMode.LeftCompact); } }
+        protected NavigationViewMenuPaneItemCollection footerMenuItems;
 
-
-        //[Browsable(true)]
+        [Category("Navigation Options")]
         [DefaultValue(true)]
-        //[Category("Navigation Options")]
         public bool IsSettingsVisible
         {
             get => this.tbtSettings.Visible;
             set => this.tbtSettings.Visible = value;
         }
 
-        [DefaultValue(PaneDisplayMode.Left)]
-        public PaneDisplayMode PaneDisplayMode
+        [Category("Navigation Options")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public NavigationViewMenuPaneItemCollection MenuItems
+        {
+            get => this.menuItems;
+            protected set { this.menuItems = value; this.RebuildToolStripItems(); }
+        }
+
+        protected NavigationViewMenuPaneItemCollection menuItems;
+
+        [Category("Navigation Options")]
+        [DefaultValue(DisplayMode.Left)]
+        public DisplayMode PaneDisplayMode
         {
             get => this.paneDisplayMode;
             set => this.SetPaneDisplayMode(value);
         }
+
+        protected DisplayMode paneDisplayMode = DisplayMode.Left;
+
+        [Category("Navigation Options")]
+        public bool PaneDisplayModeIsCompact { get { return ((this.paneDisplayMode == DisplayMode.LeftCompact) || (this.paneDisplayMode == DisplayMode.TopCompact)); } }
+
+
+        /// <summary>
+        /// <see cref="NavigationViewMenuPane"/>'s display mode.<br/>
+        /// <br/>
+        /// Can be one of the following values:<br/>
+        /// 
+        /// <list type="bullet">
+        ///     <item>Left</item>
+        ///     <item>Top</item>
+        ///     <item>LeftCompact</item>
+        ///     <item>TopCompact</item>
+        /// </list>
+        /// </summary>
+        public enum DisplayMode
+        {
+            Left,
+            Top,
+            LeftCompact,
+            TopCompact,
+        }
+
+        protected bool DisplayModeIsCompact => this.PaneDisplayMode == DisplayMode.LeftCompact || this.PaneDisplayMode == DisplayMode.TopCompact;
 
         public NavigationViewMenuPane()
         {
             InitializeComponent();
 
             this.menuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtOpenNavigation });
-            this.footerMenuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtSettings });
+            this.footerMenuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtSettings }, true);
 
 
             this.RebuildToolStripItems();
-
-            //this.testToolStripItems.Add(new ToolStripButton("test"));
         }
 
-        protected void RebuildToolStripItems()
+        protected internal void RebuildToolStripItems()
         {
             this.Items.Clear();
 
@@ -76,32 +109,9 @@ namespace electrifier.Components.Controls
             this.Items.AddRange(this.FooterMenuItems);
         }
 
-        protected void SetPaneDisplayMode(PaneDisplayMode displayMode)
+        protected void RebuildToolStripItemsCompactMode()
         {
-            if (this.paneDisplayMode != displayMode)
-            {
-                this.paneDisplayMode = displayMode;
-
-                switch (displayMode)
-                {
-                    case PaneDisplayMode.Left:
-                    case PaneDisplayMode.LeftCompact:
-                        this.Dock = DockStyle.Left;
-                        break;
-                    case PaneDisplayMode.Top:
-                        this.Dock = DockStyle.Top;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(displayMode));
-                }
-
-                this.SetCompactMode(displayMode == PaneDisplayMode.LeftCompact);
-            }
-        }
-
-        protected void SetCompactMode(bool compactMode)
-        {
-            var displayStyle = compactMode ? ToolStripItemDisplayStyle.Image : ToolStripItemDisplayStyle.ImageAndText;
+            var displayStyle = this.DisplayModeIsCompact ? ToolStripItemDisplayStyle.Image : ToolStripItemDisplayStyle.ImageAndText;
 
             foreach (ToolStripItem item in this.Items)
             {
@@ -109,46 +119,32 @@ namespace electrifier.Components.Controls
             }
         }
 
-        ////[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        //[Browsable(true)]
-        //[Category("Data")]
-        ////[EditorAttribute(typeof(CollectionEditor))]
-        //public ToolStripItemCollection TopItems;
-
-
-        /// <summary>
-        /// This works with simple designer
-        /// </summary>
-
-        //private List<ToolStripButton> testToolStripItems = new List<ToolStripButton>();
-        ////[EditorBrowsable(EditorBrowsableState.Never)]
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        //public List<ToolStripButton> TestToolStripItems
-        //{
-        //    get { return testToolStripItems; }
-        //    set { testToolStripItems = value; }
-        //}
-
-        /// end this works
-        /// 
-
-        protected NavigationViewMenuPaneItemCollection menuItems;
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public NavigationViewMenuPaneItemCollection MenuItems
+        protected void SetPaneDisplayMode(DisplayMode displayMode)
         {
-            get => this.menuItems;
-            set => this.menuItems = value;
+            if (this.paneDisplayMode != displayMode)
+            {
+                this.paneDisplayMode = displayMode;
+
+                switch (displayMode)
+                {
+                    case DisplayMode.Left:
+                    case DisplayMode.LeftCompact:
+                        this.Dock = DockStyle.Left;
+                        break;
+                    case DisplayMode.Top:
+                    case DisplayMode.TopCompact:
+                        this.Dock = DockStyle.Top;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(displayMode));
+                }
+
+                this.RebuildToolStripItemsCompactMode();
+            }
         }
 
-        protected NavigationViewMenuPaneItemCollection footerMenuItems;
 
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public NavigationViewMenuPaneItemCollection FooterMenuItems
-        {
-            get => this.footerMenuItems;
-            set => this.footerMenuItems = value;
-        }
+
 
 
 

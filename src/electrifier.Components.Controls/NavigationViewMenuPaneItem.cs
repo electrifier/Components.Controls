@@ -9,14 +9,13 @@ using System.Windows.Forms;
 namespace electrifier.Components.Controls
 {
     /// <summary>
-    /// Inherited from <see cref="ToolStripItem"/>, which itself inherits
+    /// Inherited from <see cref="ToolStripItem"/>, which itself inherits from
     /// <see cref="Component"/>,
     /// <see cref="IDisposable"/>,
     /// <see cref="IDropTarget"/>.
     /// </summary>
     public abstract class NavigationViewMenuPaneItem : ToolStripItem
     {
-
-
+        protected bool IsFooter { get; set; }
     }
 }

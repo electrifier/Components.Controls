@@ -162,7 +162,7 @@ namespace electrifier.Components.Controls.Designers
             /// <br/>
             /// Used by <see cref="GetSortedActionItems"/>.
             /// </summary>
-            public PaneDisplayMode PaneDisplayMode
+            public NavigationViewMenuPane.DisplayMode PaneDisplayMode
             {
                 get => this.menuPane.PaneDisplayMode;
                 set => TypeDescriptor.GetProperties(this.menuPane)["PaneDisplayMode"].SetValue(this.menuPane, value);
