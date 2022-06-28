@@ -67,7 +67,6 @@ namespace electrifier.Components.Controls
         [Category("Navigation Options")]
         public bool PaneDisplayModeIsCompact { get { return ((this.paneDisplayMode == DisplayMode.LeftCompact) || (this.paneDisplayMode == DisplayMode.TopCompact)); } }
 
-
         /// <summary>
         /// <see cref="NavigationViewMenuPane"/>'s display mode.<br/>
         /// <br/>
@@ -88,17 +87,28 @@ namespace electrifier.Components.Controls
             TopCompact,
         }
 
+        protected NavigationViewMenuPaneRenderer menuPaneRenderer;
+
         protected bool DisplayModeIsCompact => this.PaneDisplayMode == DisplayMode.LeftCompact || this.PaneDisplayMode == DisplayMode.TopCompact;
 
         public NavigationViewMenuPane()
         {
             InitializeComponent();
 
+            this.menuPaneRenderer = new NavigationViewMenuPaneRenderer();       // TODO: Let the User decide which Renderer to use, via Designer. Set default to NavigationViewMenuPaneRenderer
+
+            this.Paint += this.NavigationViewMenuPane_Paint;
+
             this.menuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtOpenNavigation });
             this.footerMenuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtSettings }, true);
 
-
             this.RebuildToolStripItems();
+        }
+
+        private void NavigationViewMenuPane_Paint(object sender, PaintEventArgs e)
+        {
+            this.Renderer = this.menuPaneRenderer;
+            this.Paint -= this.NavigationViewMenuPane_Paint;
         }
 
         protected internal void RebuildToolStripItems()

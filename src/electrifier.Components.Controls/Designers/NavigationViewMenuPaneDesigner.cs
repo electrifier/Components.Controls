@@ -168,14 +168,14 @@ namespace electrifier.Components.Controls.Designers
                 set => TypeDescriptor.GetProperties(this.menuPane)["PaneDisplayMode"].SetValue(this.menuPane, value);
             }
 
-            public void DesignerActionAddHeaderItem() => this.menuPane.Items.Add(new ToolStripLabel("New Header"));
+            public void DesignerActionAddHeaderItem() => this.menuPane.MenuItems.Add(new ToolStripLabel("New Header"));
 
-            public void DesignerActionAddItem() => this.menuPane.Items.Add(new ToolStripButton("New Button"));
+            public void DesignerActionAddItem() => this.menuPane.MenuItems.Add(new ToolStripButton("New Button"));
 
-            public void DesignerActionAddSeperator() => this.menuPane.Items.Add(new ToolStripSeparator());
+            public void DesignerActionAddSeperator() => this.menuPane.MenuItems.Add(new ToolStripSeparator());
 
 
-            public void DesignerActionAddDropDownButton() => this.menuPane.Items.Add(new ToolStripDropDownButton("New DropDownButton"));     // TODO: Test
+            public void DesignerActionAddDropDownButton() => this.menuPane.MenuItems.Add(new ToolStripDropDownButton("New DropDownButton"));     // TODO: Test
 
         }
     }
