@@ -17,6 +17,8 @@ using System.Windows.Forms.Design;
 namespace electrifier.Components.Controls
 {
     /// <summary>
+    /// NOTE: Perhaps we should use an <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.iextenderprovider?view=net-6.0">IExtenderProvider</seealso>
+    /// for adding our functionality rather then creating a derived class?<br/><br/>
     /// <see href="https://github.com/dotnet/winforms/blob/main/src/System.Windows.Forms/src/System/Windows/Forms/ToolStrip.cs"/><br/>
     /// <see href="https://docs.microsoft.com/en-us/dotnet/desktop/winforms/controls/toolstrip-control-windows-forms?view=netframeworkdesktop-4.8"/>
     /// </summary>
@@ -103,6 +105,7 @@ namespace electrifier.Components.Controls
         {
             InitializeComponent();
 
+            this.ItemAdded += this.NavigationViewMenuPane_ItemAdded;
             this.Paint += this.NavigationViewMenuPane_Paint;
 
             this.menuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtOpenNavigation });
@@ -113,15 +116,40 @@ namespace electrifier.Components.Controls
             this.RebuildToolStripItems();
         }
 
-        private void TbtOpenNavigation_Click(object sender, EventArgs args)
+        private void NavigationViewMenuPane_ItemAdded(object sender, ToolStripItemEventArgs args)
         {
-            this.PaneDisplayModeIsCompact = !this.PaneDisplayModeIsCompact;
+            if (this.DesignMode)
+            {
+                Type itemType = args.Item.GetType();
+
+                if (itemType != typeof(ToolStripButton) &&
+                    itemType != typeof(ToolStripDropDownButton) &&
+                    itemType != typeof(ToolStripLabel) &&
+                    itemType != typeof(ToolStripSeparator))
+                {
+                    MessageBox.Show($"Please note that not all control types are fully supperted by NavigationViewMenuPane.\n\n" +
+                        $"Supported types are:\n" +
+                        $"\tToolStripButton\n" +
+                        $"\tToolStripDropDownButton\n" +
+                        $"\tToolStripLabel\n" +
+                        $"\tToolStripSeparator\n\n" +
+                        $"All other types can cause unexpected behaviour and rendering issues.",
+                        caption: "NavigationViewMenuPane - Warning", buttons: MessageBoxButtons.OK, icon: MessageBoxIcon.Warning);
+
+                    this.ItemAdded -= this.NavigationViewMenuPane_ItemAdded;
+                }
+            }
         }
 
         private void NavigationViewMenuPane_Paint(object sender, PaintEventArgs args)
         {
             this.Renderer = this.menuPaneRenderer;
             this.Paint -= this.NavigationViewMenuPane_Paint;
+        }
+
+        private void TbtOpenNavigation_Click(object sender, EventArgs args)
+        {
+            this.PaneDisplayModeIsCompact = !this.PaneDisplayModeIsCompact;
         }
 
         protected internal void RebuildToolStripItems()

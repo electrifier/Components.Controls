@@ -175,7 +175,6 @@ namespace electrifier.Components.Controls.Designers
 
             public void DesignerActionAddSeperator() => this.menuPane.MenuItems.Add(new ToolStripSeparator());                                  // TODO: Rebuild / Align PaneDisplayMode
 
-
             public void DesignerActionAddDropDownButton() => this.menuPane.MenuItems.Add(new ToolStripDropDownButton("New DropDownButton"));    // TODO: Rebuild / Align PaneDisplayMode
 
         }
