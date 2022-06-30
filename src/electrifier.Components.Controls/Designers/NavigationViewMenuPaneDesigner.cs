@@ -17,8 +17,8 @@ namespace electrifier.Components.Controls.Designers
     /// <summary>
     /// The <see cref="ControlDesigner"/> of <see cref="NavigationViewMenuPane"/>.<br/>
     /// 
-    /// <see href="https://github.com/dotnet/winforms/blob/main/src/System.Windows.Forms.Design/src/System/Windows/Forms/Design/ToolStripDesigner.cs"/>
-    /// 
+    /// <see href="https://github.com/dotnet/winforms/blob/main/src/System.Windows.Forms.Design/src/System/Windows/Forms/Design/ToolStripDesigner.cs"/><br/>
+    /// <br/>
     /// Useful links:
     /// <list type="bullet">
     ///     <item>
@@ -86,8 +86,9 @@ namespace electrifier.Components.Controls.Designers
             "Anchor",
             "GripStyle",
             "GripMargin",
-            "Items",
+            //"Items",
             "Padding",
+            "Stretch"
         };
 
         protected override void PreFilterProperties(IDictionary properties)
@@ -168,14 +169,14 @@ namespace electrifier.Components.Controls.Designers
                 set => TypeDescriptor.GetProperties(this.menuPane)["PaneDisplayMode"].SetValue(this.menuPane, value);
             }
 
-            public void DesignerActionAddHeaderItem() => this.menuPane.MenuItems.Add(new ToolStripLabel("New Header"));
+            public void DesignerActionAddHeaderItem() => this.menuPane.MenuItems.Add(new ToolStripLabel("New Header"));                         // TODO: Rebuild / Align PaneDisplayMode
 
-            public void DesignerActionAddItem() => this.menuPane.MenuItems.Add(new ToolStripButton("New Button"));
+            public void DesignerActionAddItem() => this.menuPane.MenuItems.Add(new ToolStripButton("New Button"));                              // TODO: Rebuild / Align PaneDisplayMode
 
-            public void DesignerActionAddSeperator() => this.menuPane.MenuItems.Add(new ToolStripSeparator());
+            public void DesignerActionAddSeperator() => this.menuPane.MenuItems.Add(new ToolStripSeparator());                                  // TODO: Rebuild / Align PaneDisplayMode
 
 
-            public void DesignerActionAddDropDownButton() => this.menuPane.MenuItems.Add(new ToolStripDropDownButton("New DropDownButton"));     // TODO: Test
+            public void DesignerActionAddDropDownButton() => this.menuPane.MenuItems.Add(new ToolStripDropDownButton("New DropDownButton"));    // TODO: Rebuild / Align PaneDisplayMode
 
         }
     }

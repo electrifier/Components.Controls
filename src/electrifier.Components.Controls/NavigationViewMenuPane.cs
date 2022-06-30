@@ -44,6 +44,10 @@ namespace electrifier.Components.Controls
             set => this.tbtSettings.Visible = value;
         }
 
+        [Description("The location is controlled by PaneDisplayMode property.")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new Point Location => base.Location;
+
         [Category("Navigation Options")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public NavigationViewMenuPaneItemCollection MenuItems
@@ -65,47 +69,56 @@ namespace electrifier.Components.Controls
         protected DisplayMode paneDisplayMode = DisplayMode.Left;
 
         [Category("Navigation Options")]
-        public bool PaneDisplayModeIsCompact { get { return ((this.paneDisplayMode == DisplayMode.LeftCompact) || (this.paneDisplayMode == DisplayMode.TopCompact)); } }
-
-        /// <summary>
-        /// <see cref="NavigationViewMenuPane"/>'s display mode.<br/>
-        /// <br/>
-        /// Can be one of the following values:<br/>
-        /// 
-        /// <list type="bullet">
-        ///     <item>Left</item>
-        ///     <item>Top</item>
-        ///     <item>LeftCompact</item>
-        ///     <item>TopCompact</item>
-        /// </list>
-        /// </summary>
-        public enum DisplayMode
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool PaneDisplayModeIsCompact
         {
-            Left,
-            Top,
-            LeftCompact,
-            TopCompact,
+            get => ((this.PaneDisplayMode == DisplayMode.LeftCompact) || (this.PaneDisplayMode == DisplayMode.TopCompact));
+            set
+            {
+                switch (this.PaneDisplayMode)
+                {
+                    case DisplayMode.Left:
+                        this.PaneDisplayMode = DisplayMode.LeftCompact;
+                        break;
+                    case DisplayMode.Top:
+                        this.PaneDisplayMode = DisplayMode.TopCompact;
+                        break;
+                    case DisplayMode.LeftCompact:
+                        this.PaneDisplayMode = DisplayMode.Left;
+                        break;
+                    case DisplayMode.TopCompact:
+                        this.PaneDisplayMode |= DisplayMode.Top;
+                        break;
+                }
+            }
         }
 
         protected NavigationViewMenuPaneRenderer menuPaneRenderer;
 
-        protected bool DisplayModeIsCompact => this.PaneDisplayMode == DisplayMode.LeftCompact || this.PaneDisplayMode == DisplayMode.TopCompact;
+        [Description("The size is controlled by PaneDisplayMode property.")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new Size Size => base.Size;
 
         public NavigationViewMenuPane()
         {
             InitializeComponent();
-
-            this.menuPaneRenderer = new NavigationViewMenuPaneRenderer();       // TODO: Let the User decide which Renderer to use, via Designer. Set default to NavigationViewMenuPaneRenderer
 
             this.Paint += this.NavigationViewMenuPane_Paint;
 
             this.menuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtOpenNavigation });
             this.footerMenuItems = new NavigationViewMenuPaneItemCollection(this, new ToolStripItem[] { this.tbtSettings }, true);
 
+            this.menuPaneRenderer = new NavigationViewMenuPaneRenderer();       // TODO: Let the User decide which Renderer to use, via Designer. Set default to NavigationViewMenuPaneRenderer
+
             this.RebuildToolStripItems();
         }
 
-        private void NavigationViewMenuPane_Paint(object sender, PaintEventArgs e)
+        private void TbtOpenNavigation_Click(object sender, EventArgs args)
+        {
+            this.PaneDisplayModeIsCompact = !this.PaneDisplayModeIsCompact;
+        }
+
+        private void NavigationViewMenuPane_Paint(object sender, PaintEventArgs args)
         {
             this.Renderer = this.menuPaneRenderer;
             this.Paint -= this.NavigationViewMenuPane_Paint;
@@ -121,7 +134,7 @@ namespace electrifier.Components.Controls
 
         protected void RebuildToolStripItemsCompactMode()
         {
-            var displayStyle = this.DisplayModeIsCompact ? ToolStripItemDisplayStyle.Image : ToolStripItemDisplayStyle.ImageAndText;
+            ToolStripItemDisplayStyle displayStyle = this.PaneDisplayModeIsCompact ? ToolStripItemDisplayStyle.Image : ToolStripItemDisplayStyle.ImageAndText;
 
             foreach (ToolStripItem item in this.Items)
             {
@@ -131,25 +144,34 @@ namespace electrifier.Components.Controls
 
         protected void SetPaneDisplayMode(DisplayMode displayMode)
         {
-            if (this.paneDisplayMode != displayMode)
+            try
             {
-                this.paneDisplayMode = displayMode;
+                this.SuspendLayout();
 
-                switch (displayMode)
+                if (this.paneDisplayMode != displayMode)
                 {
-                    case DisplayMode.Left:
-                    case DisplayMode.LeftCompact:
-                        this.Dock = DockStyle.Left;
-                        break;
-                    case DisplayMode.Top:
-                    case DisplayMode.TopCompact:
-                        this.Dock = DockStyle.Top;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(displayMode));
-                }
+                    this.paneDisplayMode = displayMode;
 
-                this.RebuildToolStripItemsCompactMode();
+                    switch (displayMode)
+                    {
+                        case DisplayMode.Left:
+                        case DisplayMode.LeftCompact:
+                            this.Dock = DockStyle.Left;
+                            break;
+                        case DisplayMode.Top:
+                        case DisplayMode.TopCompact:
+                            this.Dock = DockStyle.Top;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(displayMode));
+                    }
+
+                    this.RebuildToolStripItemsCompactMode();
+                }
+            }
+            finally
+            {
+                this.ResumeLayout();
             }
         }
 
@@ -200,16 +222,13 @@ namespace electrifier.Components.Controls
             this.Dock = System.Windows.Forms.DockStyle.Left;
             this.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.ImageScalingSize = new System.Drawing.Size(24, 24);
-            //this.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            //this.tbtOpenNavigation,
-            //this.tbtSettings});
             this.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.StackWithOverflow;
             this.Name = "NavigationMenu";
             this.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.Size = new System.Drawing.Size(250, 450);
             // 
             // tbtOpenNavigation
             // 
+            this.tbtOpenNavigation.Click += this.TbtOpenNavigation_Click;
             this.tbtOpenNavigation.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.tbtOpenNavigation.Image = ((System.Drawing.Image)(resources.GetObject("tbtOpenNavigation.Image")));
             this.tbtOpenNavigation.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -224,7 +243,6 @@ namespace electrifier.Components.Controls
             this.tbtSettings.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.tbtSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtSettings.Name = "tbtSettings";
-            this.tbtSettings.Size = new System.Drawing.Size(248, 28);
             this.tbtSettings.Text = "Settings";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -234,5 +252,24 @@ namespace electrifier.Components.Controls
 
         #endregion ============================================================================================================
 
+        /// <summary>
+        /// <see cref="NavigationViewMenuPane"/>'s display mode.<br/>
+        /// <br/>
+        /// Can be one of the following values:<br/>
+        /// 
+        /// <list type="bullet">
+        ///     <item>Left</item>
+        ///     <item>Top</item>
+        ///     <item>LeftCompact</item>
+        ///     <item>TopCompact</item>
+        /// </list>
+        /// </summary>
+        public enum DisplayMode
+        {
+            Left,
+            Top,
+            LeftCompact,
+            TopCompact,
+        }
     }
 }
