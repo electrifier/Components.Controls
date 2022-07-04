@@ -79,16 +79,16 @@ namespace electrifier.Components.Controls.Designers
         /// </list>
         /// </summary>
         public static readonly string[] removedProperties = {
+            "Anchor",
             "AutoSize",
             "Dock",
-            "LayoutStyle",
-
-            "Anchor",
             "GripStyle",
             "GripMargin",
-            //"Items",
+            "LayoutStyle",
+            "MaximumSize",
+            "MinimumSize",
             "Padding",
-            "Stretch"
+            "Stretch",
         };
 
         protected override void PreFilterProperties(IDictionary properties)
@@ -169,13 +169,13 @@ namespace electrifier.Components.Controls.Designers
                 set => TypeDescriptor.GetProperties(this.menuPane)["PaneDisplayMode"].SetValue(this.menuPane, value);
             }
 
-            public void DesignerActionAddHeaderItem() => this.menuPane.MenuItems.Add(new ToolStripLabel("New Header"));                         // TODO: Rebuild / Align PaneDisplayMode
+            public void DesignerActionAddHeaderItem() => this.menuPane.Items.Add(new ToolStripLabel("New Header"));                         // TODO: Rebuild / Align PaneDisplayMode
 
-            public void DesignerActionAddItem() => this.menuPane.MenuItems.Add(new ToolStripButton("New Button"));                              // TODO: Rebuild / Align PaneDisplayMode
+            public void DesignerActionAddItem() => this.menuPane.Items.Add(new ToolStripButton("New Button"));                              // TODO: Rebuild / Align PaneDisplayMode
 
-            public void DesignerActionAddSeperator() => this.menuPane.MenuItems.Add(new ToolStripSeparator());                                  // TODO: Rebuild / Align PaneDisplayMode
+            public void DesignerActionAddSeperator() => this.menuPane.Items.Add(new ToolStripSeparator());                                  // TODO: Rebuild / Align PaneDisplayMode
 
-            public void DesignerActionAddDropDownButton() => this.menuPane.MenuItems.Add(new ToolStripDropDownButton("New DropDownButton"));    // TODO: Rebuild / Align PaneDisplayMode
+            public void DesignerActionAddDropDownButton() => this.menuPane.Items.Add(new ToolStripDropDownButton("New DropDownButton"));    // TODO: Rebuild / Align PaneDisplayMode
 
         }
     }
